@@ -7,6 +7,9 @@ The purpose of this system was to create a proper survival mode with customizati
 
 Check out the [Survival Genesis Trailer](https://www.youtube.com/watch?v=qwiZU7FHbGE)
 
+### Documentation: [Wiki](https://github.com/Packer/FAF-Survival-Genesis-Blank/wiki)
+
+
 ### Key Features
 
 * **1-16 Players** -  Easy setup that allows 1-16 Player balancing and testing
