@@ -11,7 +11,6 @@ ModUnit = function(CustomUnit, UnitID, unitMods, Wave)
 	--Loop through each mod
 	for x = 1, table.getn(unitMods) do
 
-	
 		--Set mods to upper always incase
 		unitMods[x] = string.upper(unitMods[x]);
 
@@ -84,7 +83,7 @@ ModUnit = function(CustomUnit, UnitID, unitMods, Wave)
 			end
 
 			--Tatical Defense
-			if(unitMods[x] == "TACTD") then
+			if(unitMods[x] == "TMD") then
 				Wep[i] = CreateUnitHPR('UAB4201', "ARMY_SURVIVAL_ENEMY", 0,0,0,0,0,0);
 			end
 

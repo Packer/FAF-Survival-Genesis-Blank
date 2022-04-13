@@ -5,7 +5,7 @@
 SpawnModUnits = function(UnitList)
 
 	local count = 0;
-	local position = {128,0,128};
+	local position = Scenario.MasterChain._MASTERCHAIN_.Markers["ARMY_1"].position
 
 	--Loop through each mod
 	--Tier

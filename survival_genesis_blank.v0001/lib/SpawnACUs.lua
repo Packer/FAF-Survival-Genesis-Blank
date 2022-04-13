@@ -158,22 +158,22 @@ SpawnACUs = function(Mods)
 				if (spawnID == 7) then
 
 					if (FactionID == 1) then -- uef
-						ACU = CreateUnitHPR('UEL0401', Army, POS[1], POS[2], POS[3] - 17, 0,0,0);
+						ACU = CreateUnitHPR('UEL0401', Army, POS[1], POS[2], POS[3], 0,3.1,0);
 					end
 					if (FactionID == 2) then -- aeon
-						ACU = CreateUnitHPR('UAB0301', Army, POS[1], POS[2], POS[3] - 17, 0,0,0);
-						CreateUnitHPR('UAL0401', Army, POS[1], POS[2], POS[3] - 10, 0,0,0);
+						CreateUnitHPR('UAB0301', Army, POS[1] - 7, POS[2], POS[3] - 3, 0,0,0);
+						ACU = CreateUnitHPR('UAL0401', Army, POS[1], POS[2], POS[3] - 10, 0,3.1,0);
 					end
 					if (FactionID == 3) then -- cybran
-						ACU = CreateUnitHPR('XRL0403', Army, POS[1], POS[2], POS[3] - 17, 0,0,0);
+						ACU = CreateUnitHPR('XRL0403', Army, POS[1], POS[2], POS[3], 0,3.1,0);
 					end
 					if (FactionID == 4) then -- seraphim
-						ACU = CreateUnitHPR('XSB0301', Army, POS[1], POS[2], POS[3] - 17, 0,0,0);
-						CreateUnitHPR('XSL0401', Army, POS[1], POS[2], POS[3] - 10, 0,0,0);
+						CreateUnitHPR('XSB0301', Army, POS[1] - 7, POS[2], POS[3] - 3, 0,0,0);
+						ACU = CreateUnitHPR('XSL0401', Army, POS[1], POS[2], POS[3] - 10, 0,0,0);
 					end
 					if (Mods[2][1] and FactionID == 5) then -- nomads
-						ACU = CreateUnitHPR('XNB0301', Army, POS[1], POS[2], POS[3] - 10, 0,0,0);
-						CreateUnitHPR('XNL0403', Army, POS[1], POS[2], POS[3] - 10, 0,0,0);
+						CreateUnitHPR('XNB0301', Army, POS[1] - 7, POS[2], POS[3] - 3, 0,3.1,0);
+						ACU = CreateUnitHPR('XNL0403', Army, POS[1], POS[2], POS[3] - 10, 0,3.1,0);
 					end
 
 					ACU:SetProductionPerSecondMass(8);
