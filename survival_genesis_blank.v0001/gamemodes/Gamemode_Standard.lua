@@ -28,12 +28,6 @@ PlayerRestrictions = function(Army, Mods)
 	ScenarioFramework.RemoveRestriction(Army, categories.uea0003);
 	ScenarioFramework.RemoveRestriction(Army, categories.xea3204);
 	
-	--Remove Nuke Defense, not used
-	ScenarioFramework.AddRestriction(Army, categories.ueb4302);
-	ScenarioFramework.AddRestriction(Army, categories.urb4302);
-	ScenarioFramework.AddRestriction(Army, categories.uab4302);
-	ScenarioFramework.AddRestriction(Army, categories.xsb4302);
-	
 	--BlackOps FAF: Unleashed
 	if(Mods[5][1]) then	
 		ScenarioFramework.AddRestriction(Army, categories.baa0401); --Artemis Sat
@@ -70,22 +64,6 @@ PlayerRestrictions = function(Army, Mods)
 end
 
 BotRestrictions = function(Army, Mods)
-
-	--Remove Restrictions on Bots so they don't have Errors
-	ScenarioFramework.RemoveRestriction(Army, categories.WALL);
-	ScenarioFramework.RemoveRestriction(Army, categories.NUKE);
-	ScenarioFramework.RemoveRestriction(Army, categories.xeb2402);	--Sat
-	ScenarioFramework.RemoveRestriction(Army, categories.xab1401);	--para
-	
-	--Nuke Defense
-	ScenarioFramework.RemoveRestriction(Army, categories.ueb4302);
-	ScenarioFramework.RemoveRestriction(Army, categories.urb4302);
-	ScenarioFramework.RemoveRestriction(Army, categories.uab4302);
-	ScenarioFramework.RemoveRestriction(Army, categories.xsb4302);
-	
-	if(Mods[2][1]) then	--Nomads
-		ScenarioFramework.RemoveRestriction(Army, categories.xnb302);
-	end
 end
 
 GameplayUpdate = function(Wave)

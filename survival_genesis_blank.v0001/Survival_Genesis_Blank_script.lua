@@ -149,7 +149,6 @@ local s_EndlessWave =	--Used to track endless wave, dont modify
 	}
 };
 
-
 -- Enemy Data - Automatic
 local s_TableFile = nil;
 local s_WavesTable = nil;				--The data for selecting units to be spawned
@@ -279,8 +278,6 @@ SetupGame = function()
 	--Restrictions();
 
 	for i, Army in ListArmies() do
-
-	LOG(Army)
 
 		-- Player Army Check
 		if (ArmyToInt.GetInt(Army) > 0) then 

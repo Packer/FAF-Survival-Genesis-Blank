@@ -3,9 +3,13 @@
 -- Inspired by Survival
 
 local ArmyToInt = import(ScenarioInfo.directory .. 'lib/ArmyToInt.lua');
+local ScenarioUtils = import('/lua/sim/ScenarioUtilities.lua');
 
 --Custom ACU Spawn with All Factions as options
 SpawnACUs = function(Mods)
+
+	--Setup Armies
+	InitializeArmies();
 
 	local spawnID = ScenarioInfo.Options.opt_Survival_AllFactions;
 	local count = 0;
@@ -24,12 +28,6 @@ SpawnACUs = function(Mods)
 	end
 		
 	for i, Army in ListArmies() do
-
-        SetArmyEconomy( Army, Scenario.Armies[Army].Economy.mass, Scenario.Armies[Army].Economy.energy);
-
-		if GetArmyBrain(Army).SkirmishSystems then
-		    GetArmyBrain(Army):InitializeSkirmishSystems();
-		end
 
 		if (ArmyToInt.GetInt(Army) > 0) then 
 
@@ -210,4 +208,74 @@ SpawnACUs = function(Mods)
 
 	PlayerCom["PlayerCount"] = playerCount;
 	return PlayerCom;
+end
+
+
+
+--Custom InitializeArmies
+InitializeArmies = function()
+    local tblGroups = {}
+    local tblArmy = ListArmies()
+
+    local civOpt = ScenarioInfo.Options.CivilianAlliance
+
+    local bCreateInitial = ShouldCreateInitialArmyUnits()
+
+    for iArmy, strArmy in pairs(tblArmy) do
+        local tblData = Scenario.Armies[strArmy]
+
+        tblGroups[ strArmy ] = {}
+
+        if tblData then
+
+            SetArmyEconomy( strArmy, tblData.Economy.mass, tblData.Economy.energy)
+            
+            if GetArmyBrain(strArmy).SkirmishSystems then
+                GetArmyBrain(strArmy):InitializeSkirmishSystems()
+            end
+
+            local armyIsCiv = ScenarioInfo.ArmySetup[strArmy].Civilian
+
+            if (not armyIsCiv and bCreateInitial) or (armyIsCiv and civOpt != 'removed') then
+                local commander = nil
+                local cdrUnit
+                tblGroups[strArmy], cdrUnit = ScenarioUtils.CreateInitialArmyGroup( strArmy, commander)
+                if commander and cdrUnit and ArmyBrains[iArmy].Nickname then
+                    cdrUnit:SetCustomName( ArmyBrains[iArmy].Nickname )
+                end
+            end
+
+            local wreckageGroup = ScenarioUtils.FindUnitGroup('WRECKAGE', Scenario.Armies[strArmy].Units)
+            if wreckageGroup then
+                local platoonList, tblResult, treeResult = CreatePlatoons(strArmy, wreckageGroup )
+                for num,unit in tblResult do
+                    unit:CreateWreckageProp(0)
+                    unit:Destroy()
+                end
+            end
+
+
+
+            #--[ irumsey                                                         ]--
+            #--[ Temporary defaults.  Make sure some fighting will break out.    ]--
+            for iEnemy, strEnemy in pairs(tblArmy) do
+                local enemyIsCiv = ScenarioInfo.ArmySetup[strEnemy].Civilian
+
+                if iArmy != iEnemy and strArmy != 'NEUTRAL_CIVILIAN' and strEnemy != 'NEUTRAL_CIVILIAN' then
+                    if (armyIsCiv or enemyIsCiv) and civOpt == 'neutral' then
+                        SetAlliance( iArmy, iEnemy, 'Neutral')
+                    else
+                        SetAlliance( iArmy, iEnemy, 'Enemy')
+                    end
+                elseif strArmy == 'NEUTRAL_CIVILIAN' or strEnemy == 'NEUTRAL_CIVILIAN' then
+                    SetAlliance( iArmy, iEnemy, 'Neutral')
+                end
+            end
+
+
+        end
+
+    end
+
+    return tblGroups
 end
