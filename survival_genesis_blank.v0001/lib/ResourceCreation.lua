@@ -24,7 +24,7 @@ CreateResource = function(type, x, y, z)
 end
 
 
-GetResourceBlueprint = function(Army, FastEco)
+GetResourceBlueprint = function(Army, FastEco, Mods)
 
 	local Hydro = nil;
 	local Power = nil;
@@ -81,6 +81,19 @@ GetResourceBlueprint = function(Army, FastEco)
 			Mexe = 'XNB1202';
 		else
 			Mexe = 'XNB1103';
+		end
+	end
+
+	--SCTA
+	if(Mods[23][1] == true) then
+		--Use SupCom Hydro
+		Power = 'CORFUS';
+		if(FastEco == 3) then
+			Mexe = 'ARMMOHO';	--T3
+		elseif(FastEco == 2) then
+			Mexe = 'ARMMOHO'; --T2
+		else
+			Mexe = 'ARMMEX'; --T1
 		end
 	end
 

@@ -107,6 +107,10 @@ local s_Mods =
 	{false, "Antares Unit Pack (Preservation)", 'Units_AntaresUnitPack.lua'},	--18	
 	{false, "(F.B.P.) Future Battlefield Pack: Legends", 'Units_FBPL.lua'},		--19	
 	{false, "Experimentals Wars", 'Units_ExperimentalsWars.lua'},				--20	
+	{false, "Annihilation New SupCom", 'Units_AnnihilationSupCom.lua'},			--21		
+	{false, "SCTABalance", 'Units_SCTABalance.lua'},							--22		
+	{false, "SCTAFix", 'Units_SCTAFix.lua'},									--23	
+	{false, "Hyper Experimental Tier", 'Units_HyperET.lua'},					--24
 }
 
 --------------------------------------------------------------------------
@@ -1566,7 +1570,7 @@ CreateResources = function()
 			POS[3] = ArmyPos[3];
 			
 			if(FastEco ~= 0) then
-				blueprints = ResourceCreation.GetResourceBlueprint(Army, FastEco);
+				blueprints = ResourceCreation.GetResourceBlueprint(Army, FastEco, s_Mods);
 			end
 
 			if(s_AutoResources) then

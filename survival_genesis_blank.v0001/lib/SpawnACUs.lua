@@ -26,6 +26,11 @@ SpawnACUs = function(Mods)
 	if(Mods[6][1]) then
 		Commanders = {'EEL0001', 'EAL0001', 'ERL0001', 'ESL0001', 'XNL0001'};
 	end
+
+	--SCTAFix
+	if(Mods[23][1]) then
+		Commanders = {'MAS0001', 'MAS0001', 'MAS0001', 'MAS0001', 'MAS0001'};
+	end
 		
 	for i, Army in ListArmies() do
 
@@ -57,6 +62,14 @@ SpawnACUs = function(Mods)
 					if (Mods[2][1] and FactionID ~= 5) then -- nomads
 						CreateUnitHPR('XNL0105', Army, POS[1] - 4, POS[2], POS[3] - 2, 0,0,0);
 					end
+					
+					--SCTA
+					if(Mods[23][1]) then
+						CreateUnitHPR('ARMCA', Army, POS[1] + 6, POS[2], POS[3] - 2, 0,0,0);
+						CreateUnitHPR('CORCA', Army, POS[1] - 6, POS[2], POS[3] - 2, 0,0,0);
+						CreateUnitHPR('ARMCV', Army, POS[1] + 8, POS[2], POS[3] - 2, 0,0,0);
+						CreateUnitHPR('CORCV', Army, POS[1] - 8, POS[2], POS[3] - 2, 0,0,0);
+					end
 				end
 				
 				--T2 Engineers
@@ -76,6 +89,14 @@ SpawnACUs = function(Mods)
 					end
 					if (Mods[2][1] and FactionID ~= 5) then -- nomads
 						CreateUnitHPR('XNL0208', Army, POS[1] - 4, POS[2], POS[3] - 2, 0,0,0);
+					end
+
+					--SCTA
+					if(Mods[23][1]) then
+						CreateUnitHPR('ARMACA', Army, POS[1] + 6, POS[2], POS[3] - 2, 0,0,0);
+						CreateUnitHPR('CORACA', Army, POS[1] - 6, POS[2], POS[3] - 2, 0,0,0);
+						CreateUnitHPR('ARMACV', Army, POS[1] + 8, POS[2], POS[3] - 2, 0,0,0);
+						CreateUnitHPR('CORACV', Army, POS[1] - 8, POS[2], POS[3] - 2, 0,0,0);
 					end
 				end
 
@@ -97,6 +118,14 @@ SpawnACUs = function(Mods)
 					if (Mods[2][1] and FactionID ~= 5) then -- nomads
 						CreateUnitHPR('XNL0309', Army, POS[1] - 4, POS[2], POS[3] - 2, 0,0,0);
 					end
+
+					--SCTA
+					if(Mods[23][1]) then
+						CreateUnitHPR('ARMCH', Army, POS[1] + 6, POS[2], POS[3] - 2, 0,0,0);
+						CreateUnitHPR('CORCH', Army, POS[1] - 6, POS[2], POS[3] - 2, 0,0,0);
+						CreateUnitHPR('ARMCSA', Army, POS[1] + 8, POS[2], POS[3] - 2, 0,0,0);
+						CreateUnitHPR('CORCSA', Army, POS[1] - 8, POS[2], POS[3] - 2, 0,0,0);
+					end
 				end
 				
 				--Support Commanders
@@ -116,6 +145,12 @@ SpawnACUs = function(Mods)
 					end
 					if (Mods[2][1] and FactionID ~= 5) then -- nomads
 						CreateUnitHPR('XNL0301', Army, POS[1] - 4, POS[2], POS[3] - 2, 0,0,0);
+					end
+
+					--SCTA
+					if(Mods[23][1]) then
+						CreateUnitHPR('ARMDECOM', Army, POS[1] + 6, POS[2], POS[3] - 2, 0,0,0);
+						CreateUnitHPR('CORDECOM', Army, POS[1] - 6, POS[2], POS[3] - 2, 0,0,0);
 					end
 				end
 				
