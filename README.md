@@ -24,4 +24,4 @@ Check out the [Survival Genesis Trailer](https://www.youtube.com/watch?v=qwiZU7F
 * **Selectable Wave Tables** - Supports adding additional wave tables that can be selected
 
 ## Download
-Latest Release: https://github.com/Packer/FAF-Survival-Genesis-Blank/releases/tag/Release
+Latest Release: https://github.com/Packer/FAF-Survival-Genesis-Blank/releases
