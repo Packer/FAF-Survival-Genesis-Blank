@@ -45,7 +45,7 @@ local s_Waves =
 		},
 		["Base"] = 
 		{	--Blueprint, Health, Regen Rate (PER player)
-			'URB2302', 20000, 40,
+			20000, 40,
 		},
 	},
 	{

@@ -30,7 +30,7 @@ SetDefaults = function()
 	end	
 	
 	if (ScenarioInfo.Options.opt_Survival_AllLanes == nil) then
-		ScenarioInfo.Options.opt_Survival_AllLanes = false;
+		ScenarioInfo.Options.opt_Survival_AllLanes = 0;
 	end	
 
 	if (ScenarioInfo.Options.opt_Survival_UnitsLoad == nil) then
@@ -58,7 +58,11 @@ SetDefaults = function()
 	end
 	
 	if (ScenarioInfo.Options.opt_Survival_Nuke == nil) then
-		ScenarioInfo.Options.opt_Survival_Nuke = true;
+		ScenarioInfo.Options.opt_Survival_Nuke = 1;
+	end
+	
+	if (ScenarioInfo.Options.opt_Survival_Bases == nil) then
+		ScenarioInfo.Options.opt_Survival_Bases = 1;
 	end
 
 	if (ScenarioInfo.Options.opt_Survival_SpawnRate == nil) then

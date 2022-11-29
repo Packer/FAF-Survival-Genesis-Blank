@@ -12,6 +12,7 @@ local ArmyToInt = import(s_Directory .. 'lib/ArmyToInt.lua');
 local ResourceCreation = import(s_Directory .. 'lib/ResourceCreation.lua');
 local UnitMods = import(s_Directory .. 'lib/T4UnitMods.lua');
 local Nuke = import(s_Directory .. 'lib/Nuke.lua');
+local Victory = import('/lua/victory.lua');
 --------------------------------------------------------------------------
 --Editable - Easily accessible values to change the Dynamic of the map
 --------------------------------------------------------------------------
@@ -319,7 +320,7 @@ Restrictions = function()
 			end
 
 			--Nukes enabled, let defenders build anti nukes
-			if(ScenarioInfo.Options.opt_Survival_Nuke == true) then
+			if(ScenarioInfo.Options.opt_Survival_Nuke == 1) then
 				ScenarioFramework.RemoveRestriction(Army, categories.ANTIMISSILE);
 			end
 		else
@@ -481,6 +482,7 @@ GameUpdate = function(self)
 			SetGameStage(5);
 			PrintText(s_EndMessage[1], 35, 'ffCBFFFF', 600, 'center')
 			CalculateFinalScore();
+			Victory.CallEndGame()
 		
 		elseif(s_GameStage == 4) then							--Player Loss--
 			GetArmyBrain("ARMY_SURVIVAL_ENEMY"):OnVictory();
@@ -494,6 +496,7 @@ GameUpdate = function(self)
 			SetGameStage(5);
 			PrintText(s_EndMessage[2], 35, 'ffCBFFFF', 600, 'center')
 			CalculateFinalScore();
+			Victory.CallEndGame()
 		end
 		WaitSeconds(s_Tick);
 	end
@@ -528,7 +531,7 @@ SpawnWave = function()
 	end
 
 	--Nuke
-	if(ScenarioInfo.Options.opt_Survival_Nuke == true and s_WavesTable[s_Wave]["Nuke"] ~= nil) then
+	if(ScenarioInfo.Options.opt_Survival_Nuke == 1 and s_WavesTable[s_Wave]["Nuke"] ~= nil) then
 
 		--Spawn Nuke Launchers
 		if(s_WavesTable[s_Wave]["Nuke"]["Spawn"] == true and table.getn(s_NukeLaunchers) == 0) then
@@ -544,16 +547,18 @@ SpawnWave = function()
 	end
 
 	--Base
-	if(ScenarioInfo.Options.opt_Survival_Bases == true and s_WavesTable[s_Wave]["Base"] ~= nil) then
+	if(ScenarioInfo.Options.opt_Survival_Bases ~= 0 and s_WavesTable[s_Wave]["Base"] ~= nil) then
+	
+		local EnemyObjBP = ScenarioInfo.Options.opt_Survival_Bases;
 
 		--Spawn Enemy Base
 		if(table.getn(s_EnemyBases) == 0) then
 			local position = {};
 			for i = 1, table.getn(s_EnemyBaseMarkers) do
 				position = s_EnemyBaseMarkers[i].position;
-				base = CreateUnitHPR(s_WavesTable[s_Wave]["Base"][1], "ARMY_SURVIVAL_ENEMY", position[1], position[2], position[3], 0,0,0);
-				base:SetRegenRate(s_WavesTable[s_Wave]["Base"][3] * s_PlayerCount);
-				base:SetMaxHealth(s_WavesTable[s_Wave]["Base"][2]);
+				base = CreateUnitHPR(EnemyObjBP, "ARMY_SURVIVAL_ENEMY", position[1], position[2], position[3], 0,0,0);
+				base:SetRegenRate(s_WavesTable[s_Wave]["Base"][2] * s_PlayerCount);
+				base:SetMaxHealth(s_WavesTable[s_Wave]["Base"][1] * s_PlayerCount);
 				base:AdjustHealth(nil, base:GetMaxHealth());
 				base:SetHealth(nil, base:GetMaxHealth());
 				table.insert(s_EnemyBases, i, base);
@@ -1018,7 +1023,7 @@ SpawnUnit = function(blueprint, type, position, mods, boss, addHP, addSpeed, vet
 	UnitMods.ModUnit(Unit, blueprint, mods, s_WaveTotalCount);
 
 	--Damage Multiplier
-	if(ScenarioInfo.Options.opt_Survival_Damage > 1 or ScenarioInfo.Options.opt_Survival_Scale ~= 1) then
+	if(ScenarioInfo.Options.opt_Survival_Damage > 0 or ScenarioInfo.Options.opt_Survival_Scale ~= 1) then
 		local wep;
 		local damage = 0;
 
@@ -1031,12 +1036,12 @@ SpawnUnit = function(blueprint, type, position, mods, boss, addHP, addSpeed, vet
 	end
 
 	-- Prevent Wreckage option or Boss
-	if(ScenarioInfo.Options.opt_Survival_Wreckage == 0 or boss) then
-		local BP = Unit:GetBlueprint();
-		if (BP != nil) then
-			BP.Wreckage = nil;
-		end
-	end
+	--if(ScenarioInfo.Options.opt_Survival_Wreckage == 0 or boss) then
+	--	local BP = Unit:GetBlueprint();
+	--	if (BP != nil) then
+	--		BP.Wreckage = nil;
+	--	end
+	--end
 	return Unit;
 end
 
@@ -1166,7 +1171,7 @@ end
 GetSpawnMarker = function(type, playerID, boss)
 
 	--Spawn per Player Lane
-	if(not boss and ScenarioInfo.Options.opt_Survival_AllLanes == true) then
+	if(not boss and ScenarioInfo.Options.opt_Survival_AllLanes == 1) then
 		return {s_MoveMarkers[type]["SPAWN"][playerID], playerID};
 	else	--Spread spawns over all spawn points
 		--Increment
@@ -1519,7 +1524,7 @@ end
 
 EnemyBaseVictoryCheck = function()
 
-	if(ScenarioInfo.Options.opt_Survival_Bases == false or s_EnemyBaseVictory == false or s_EnemyBasesSpawned == false) then
+	if(ScenarioInfo.Options.opt_Survival_Bases == 0 or s_EnemyBaseVictory == false or s_EnemyBasesSpawned == false) then
 		return;
 	end
 

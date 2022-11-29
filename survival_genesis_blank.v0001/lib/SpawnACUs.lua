@@ -10,6 +10,7 @@ SpawnACUs = function(Mods)
 
 	--Setup Armies
 	InitializeArmies();
+    --ScenarioUtils.InitializeArmies();
 
 	local spawnID = ScenarioInfo.Options.opt_Survival_AllFactions;
 	local count = 0;
@@ -43,6 +44,11 @@ SpawnACUs = function(Mods)
 			if (MarkerRef != nil) then
 			
 				POS = MarkerRef.position;
+
+				--SCTAFix
+				if(Mods[23][1]) then
+					POS[3] = POS[3] - 2;
+				end
 
 				--T1 Engineers
 				if (spawnID == 1) then
@@ -187,6 +193,24 @@ SpawnACUs = function(Mods)
 					end
 				end
 				
+				--ACU 4 Clones
+				if (spawnID == 8) then
+				
+						PlayerCom[Army] = CreateUnitHPR(Commanders[FactionID], Army, POS[1], POS[2], POS[3] - 2, 0,0,0):SetCustomName(GetArmyBrain(Army).Nickname);
+						playerCount = playerCount + 1;
+						CreateUnitHPR(Commanders[FactionID], Army, POS[1] + 2, POS[2], POS[3] - 2, 0,0,0):SetCustomName(GetArmyBrain(Army).Nickname);
+						CreateUnitHPR(Commanders[FactionID], Army, POS[1] + 4, POS[2], POS[3] - 2, 0,0,0):SetCustomName(GetArmyBrain(Army).Nickname);
+						CreateUnitHPR(Commanders[FactionID], Army, POS[1] - 2, POS[2], POS[3] - 2, 0,0,0):SetCustomName(GetArmyBrain(Army).Nickname);
+				end
+				
+				--ACU Clone
+				if (spawnID == 9) then
+				
+						PlayerCom[Army] = CreateUnitHPR(Commanders[FactionID], Army, POS[1], POS[2], POS[3] - 2, 0,0,0):SetCustomName(GetArmyBrain(Army).Nickname);
+						playerCount = playerCount + 1;
+						CreateUnitHPR(Commanders[FactionID], Army, POS[1] + 2, POS[2], POS[3] - 2, 0,0,0):SetCustomName(GetArmyBrain(Army).Nickname);
+				end
+				
 				--Fatboy and Megalith
 				if (spawnID == 7) then
 
@@ -220,7 +244,7 @@ SpawnACUs = function(Mods)
 				
 				
 				--Spawn Faction ACU
-				if(spawnID ~= 5 and spawnID ~= 6 and spawnID ~= 7) then
+				if(spawnID ~= 5 and spawnID ~= 6 and spawnID ~= 7 and spawnID ~= 8 and spawnID ~= 9) then
 					if (FactionID == 1) then -- uef
 						ACU = CreateUnitHPR(Commanders[1], Army, POS[1], POS[2], POS[3], 0,0,0);
 					elseif (FactionID == 2) then -- aeon
@@ -246,71 +270,105 @@ SpawnACUs = function(Mods)
 end
 
 
-
 --Custom InitializeArmies
-InitializeArmies = function()
-    local tblGroups = {}
-    local tblArmy = ListArmies()
+function InitializeArmies()
+    -- globals to locals
+    local GetArmyBrain = GetArmyBrain
+    local SetArmyEconomy = SetArmyEconomy
+    local SetArmyColor = SetArmyColor
+    --local CreateInitialArmyGroup = CreateInitialArmyGroup
+    local FindUnitGroup = ScenarioUtils.FindUnitGroup
+    local CreatePlatoons = ScenarioUtils.CreatePlatoons
+    local CreateWreckageUnit = ScenarioUtils.CreateWreckageUnit
+    --local LocalSetAlliance = SetAlliance
 
+    local armySetups = ScenarioInfo.ArmySetup
     local civOpt = ScenarioInfo.Options.CivilianAlliance
+    local revealCivilians = ScenarioInfo.Options.RevealCivilians == "Yes"
+    local scenarioArmies = Scenario.Armies
+    local tblArmy = ListArmies()
+    local shouldCreateInitial = ShouldCreateInitialArmyUnits()
 
-    local bCreateInitial = ShouldCreateInitialArmyUnits()
+    local tblGroups = {}
 
-    for iArmy, strArmy in pairs(tblArmy) do
-        local tblData = Scenario.Armies[strArmy]
+    for iArmy, strArmy in tblArmy do
+        local tblData = scenarioArmies[strArmy]
 
-        tblGroups[ strArmy ] = {}
+        tblGroups[strArmy] = {}
 
         if tblData then
+            local setup = armySetups[strArmy]
+            local brain = GetArmyBrain(strArmy)
 
-            SetArmyEconomy( strArmy, tblData.Economy.mass, tblData.Economy.energy)
-            
-            if GetArmyBrain(strArmy).SkirmishSystems then
-                GetArmyBrain(strArmy):InitializeSkirmishSystems()
+            local econ = tblData.Economy
+            SetArmyEconomy(strArmy, econ.mass, econ.energy)
+
+            -- If an actual starting position is defined, overwrite the randomly generated one
+            if brain.SkirmishSystems then
+                brain:InitializeSkirmishSystems()
             end
 
-            local armyIsCiv = ScenarioInfo.ArmySetup[strArmy].Civilian
+            local armyIsCiv = setup.Civilian
 
-            if (not armyIsCiv and bCreateInitial) or (armyIsCiv and civOpt != 'removed') then
-                local commander = nil
-                local cdrUnit
-                tblGroups[strArmy], cdrUnit = ScenarioUtils.CreateInitialArmyGroup( strArmy, commander)
-                if commander and cdrUnit and ArmyBrains[iArmy].Nickname then
-                    cdrUnit:SetCustomName( ArmyBrains[iArmy].Nickname )
-                end
+            if armyIsCiv and civOpt ~= "neutral" and strArmy ~= "NEUTRAL_CIVILIAN" then -- give enemy civilians darker color
+                SetArmyColor(strArmy, 255, 48, 48) -- non-player red color for enemy civs
             end
 
-            local wreckageGroup = ScenarioUtils.FindUnitGroup('WRECKAGE', Scenario.Armies[strArmy].Units)
+            --if (not armyIsCiv and shouldCreateInitial) or (armyIsCiv and civOpt ~= "removed") then
+            --    local commander = not armyIsCiv
+            --    local cdrUnit
+            --    tblGroups[strArmy], cdrUnit = CreateInitialArmyGroup(strArmy, commander)
+            --    brain.CDR = cdrUnit
+            --    if commander and cdrUnit and brain.Nickname then
+            --        cdrUnit:SetCustomName(brain.Nickname)
+            --    end
+            --end
+
+            local wreckageGroup = FindUnitGroup("WRECKAGE", tblData.Units)
             if wreckageGroup then
-                local platoonList, tblResult, treeResult = CreatePlatoons(strArmy, wreckageGroup )
-                for num,unit in tblResult do
-                    unit:CreateWreckageProp(0)
-                    unit:Destroy()
+			    local _, tblResult = CreatePlatoons(strArmy, wreckageGroup)
+                for _, unit in tblResult do
+                    CreateWreckageUnit(unit)
                 end
             end
 
-
-
-            #--[ irumsey                                                         ]--
-            #--[ Temporary defaults.  Make sure some fighting will break out.    ]--
-            for iEnemy, strEnemy in pairs(tblArmy) do
-                local enemyIsCiv = ScenarioInfo.ArmySetup[strEnemy].Civilian
-
-                if iArmy != iEnemy and strArmy != 'NEUTRAL_CIVILIAN' and strEnemy != 'NEUTRAL_CIVILIAN' then
-                    if (armyIsCiv or enemyIsCiv) and civOpt == 'neutral' then
-                        SetAlliance( iArmy, iEnemy, 'Neutral')
-                    else
-                        SetAlliance( iArmy, iEnemy, 'Enemy')
+            ----[ irumsey                                                         ]--
+            ----[ Temporary defaults.  Make sure some fighting will break out.    ]--
+            for iEnemy, _ in tblArmy do
+                -- only do it once for each pair
+                if iEnemy >= iArmy then
+                    continue
+                end
+                local state = "Enemy"
+                if armyIsCiv then
+                    if civOpt == "neutral" or strArmy == "NEUTRAL_CIVILIAN" then
+                        state = "Neutral"
                     end
-                elseif strArmy == 'NEUTRAL_CIVILIAN' or strEnemy == 'NEUTRAL_CIVILIAN' then
-                    SetAlliance( iArmy, iEnemy, 'Neutral')
+
+                    if revealCivilians then
+                        ForkThread(function(civ, army)
+                            WaitSeconds(0.1)
+
+                            local real_state = IsAlly(civ, army) and "Ally" or IsEnemy(civ, army) and "Enemy" or "Neutral"
+                            GetArmyBrain(army):SetupArmyIntelTrigger({
+                                Category = categories.ALLUNITS,
+                                Type = "LOSNow",
+                                Value = true,
+                                OnceOnly = true,
+                                TargetAIBrain = GetArmyBrain(civ),
+                                CallbackFunction = function()
+                                    SetAlliance(civ, army, real_state)
+                                end,
+                            })
+                            SetAlliance(civ, army, "Ally")
+                        end, iArmy, iEnemy)
+                    end
                 end
+                SetAlliance(iArmy, iEnemy, state)
             end
-
-
         end
-
     end
 
     return tblGroups
 end
+
