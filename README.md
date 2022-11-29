@@ -8,6 +8,7 @@ The purpose of this system was to create a proper survival mode with customizati
 Check out the [Survival Genesis Trailer](https://www.youtube.com/watch?v=qwiZU7FHbGE)
 
 ### Documentation: [Wiki](https://github.com/Packer/FAF-Survival-Genesis-Blank/wiki)
+[Video Tutorial](https://www.youtube.com/watch?v=eiHbgpmAaU8)
 
 
 ### Key Features
