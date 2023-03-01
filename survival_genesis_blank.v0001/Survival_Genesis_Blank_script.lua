@@ -13,6 +13,7 @@ local ResourceCreation = import(s_Directory .. 'lib/ResourceCreation.lua');
 local UnitMods = import(s_Directory .. 'lib/T4UnitMods.lua');
 local Nuke = import(s_Directory .. 'lib/Nuke.lua');
 local Victory = import('/lua/victory.lua');
+local ACUModule = import(s_Directory .. 'lib/SpawnACUs.lua');
 --------------------------------------------------------------------------
 --Editable - Easily accessible values to change the Dynamic of the map
 --------------------------------------------------------------------------
@@ -239,7 +240,7 @@ function OnPopulate()
 	CreateResources();
 	
 	--Spawn ACU Units
-	s_PlayerACUs = import(s_Directory .. 'lib/SpawnACUs.lua').SpawnACUs(s_Mods);
+	s_PlayerACUs = ACUModule.SpawnACUs(s_Mods);
 	s_PlayerCount = s_PlayerACUs["PlayerCount"];
 	--ACU Assassination
 	--SetupACUs();
@@ -581,7 +582,6 @@ SpawnWave = function()
 		ForkThread(CustomWave);
 	end
 end
-
 
 CustomWave = function(self)
 

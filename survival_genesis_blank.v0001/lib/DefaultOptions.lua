@@ -34,7 +34,7 @@ SetDefaults = function()
 	end	
 
 	if (ScenarioInfo.Options.opt_Survival_UnitsLoad == nil) then
-		ScenarioInfo.Options.opt_Survival_UnitsLoad = 1;
+		ScenarioInfo.Options.opt_Survival_UnitsLoad = 0;
 	end
 
 	if (ScenarioInfo.Options.opt_Survival_WaveTable == nil) then

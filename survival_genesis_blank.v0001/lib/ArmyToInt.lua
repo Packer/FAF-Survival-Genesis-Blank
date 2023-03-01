@@ -1,41 +1,33 @@
 -- Packer's Lazy conversion from ARMY to INT
 -- Created by Packer
 
+local switch =
+{
+	["ARMY_1"] = 1,
+	["ARMY_2"] = 2,
+	["ARMY_3"] = 3,
+	["ARMY_4"] = 4,
+	["ARMY_5"] = 5,
+	["ARMY_6"] = 6,
+	["ARMY_7"] = 7,
+	["ARMY_8"] = 8,
+	["ARMY_9"] = 9,
+	["ARMY_10"] = 10,
+	["ARMY_11"] = 11,
+	["ARMY_12"] = 12,
+	["ARMY_13"] = 13,
+	["ARMY_14"] = 14,
+	["ARMY_15"] = 15,
+	["ARMY_16"] = 16,
+}
+
 GetInt = function(Army)
 
-	if(Army == "ARMY_1") then
-		return 1;
-	elseif(Army == "ARMY_2") then
-		return 2;
-	elseif(Army == "ARMY_3") then
-		return 3;
-	elseif(Army == "ARMY_4") then
-		return 4;
-	elseif(Army == "ARMY_5") then
-		return 5;
-	elseif(Army == "ARMY_6") then
-		return 6;
-	elseif(Army == "ARMY_7") then
-		return 7;
-	elseif(Army == "ARMY_8") then
-		return 8;
-	elseif(Army == "ARMY_9") then
-		return 9;
-	elseif(Army == "ARMY_10") then
-		return 10;
-	elseif(Army == "ARMY_11") then
-		return 11;
-	elseif(Army == "ARMY_12") then
-		return 12;
-	elseif(Army == "ARMY_13") then
-		return 13;
-	elseif(Army == "ARMY_14") then
-		return 14;
-	elseif(Army == "ARMY_15") then
-		return 15;
-	elseif(Army == "ARMY_16") then
-		return 16;
-	end
+	local number = switch[Army];
 
-	return 0;
+	if(number) then
+		return switch[Army];
+	else
+		return 0;
+	end
 end
