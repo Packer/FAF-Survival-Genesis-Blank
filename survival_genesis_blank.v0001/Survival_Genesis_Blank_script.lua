@@ -71,8 +71,8 @@ local s_TitleCredits =
 
 local s_EndMessage =
 {
-	"You have won!",	--Victory Message
-	"You have lost!",	--Loss Message
+	"Victory!",	--Victory Message
+	"Defeat!",	--Loss Message
 	"The enemy structures have been destroyed,",	--Enemy Base Destruction Victory Message
 	"The defense structure has been destroyed.",	--When the defense structure is destroyed
 	"The defense structure was destroyed, but the waves were defeated!",	--When the defense structure is destroyed during endless waves
@@ -113,6 +113,7 @@ local s_Mods =
 	{false, "SCTABalance", 'Units_SCTABalance.lua'},							--22		
 	{false, "SCTAFix", 'Units_SCTAFix.lua'},									--23	
 	{false, "Hyper Experimental Tier", 'Units_HyperET.lua'},					--24
+	{false, "Mixed Combat Pack", 'Units_MCP.lua'},								--25
 }
 
 --------------------------------------------------------------------------
@@ -536,6 +537,7 @@ SpawnWave = function()
 
 		--Spawn Nuke Launchers
 		if(s_WavesTable[s_Wave]["Nuke"]["Spawn"] == true and table.getn(s_NukeLaunchers) == 0) then
+			PrintText("Strategic Missile Launchers Detected", 30, 'fff4f4f4', 4, 'center')
 			for i = 1, table.getn(s_NukeMarkers) do
 				table.insert(s_NukeLaunchers, i, Nuke.SpawnNukeLauncher(s_NukeMarkers[i], s_Mods));
 			end
@@ -554,6 +556,7 @@ SpawnWave = function()
 
 		--Spawn Enemy Base
 		if(table.getn(s_EnemyBases) == 0) then
+			PrintText("Enemy Structures Detected", 30, 'fff4f4f4', 4, 'center')
 			local position = {};
 			for i = 1, table.getn(s_EnemyBaseMarkers) do
 				position = s_EnemyBaseMarkers[i].position;
@@ -648,35 +651,32 @@ CustomWave = function(self)
 							for z, Army in ListArmies() do
 								if (ArmyToInt.GetInt(Army) > 0) then
 							
-									--Spawn Several Times for Multiplier
-									for u = 1, ScenarioInfo.Options.opt_Survival_WaveMultiplier do
 
-										MarkerData = GetSpawnMarker(type, ArmyToInt.GetInt(Army) , false);
-										position[1] = MarkerData[1].position[1];
-										position[2] = MarkerData[1].position[2];
-										position[3] = MarkerData[1].position[3];
+									MarkerData = GetSpawnMarker(type, ArmyToInt.GetInt(Army) , false);
+									position[1] = MarkerData[1].position[1];
+									position[2] = MarkerData[1].position[2];
+									position[3] = MarkerData[1].position[3];
 
-										--If random range is not zero
-										if(s_SpawnRadius ~= 0) then
-											position[1] = MarkerData[1].position[1] + math.random(-s_SpawnRadius, s_SpawnRadius);
-											position[3] = MarkerData[1].position[3] + math.random(-s_SpawnRadius, s_SpawnRadius);
+									--If random range is not zero
+									if(s_SpawnRadius ~= 0) then
+										position[1] = MarkerData[1].position[1] + math.random(-s_SpawnRadius, s_SpawnRadius);
+										position[3] = MarkerData[1].position[3] + math.random(-s_SpawnRadius, s_SpawnRadius);
+									end
+
+									table.insert(PlatoonList, SpawnUnit(s_WavesTable[s_Wave]["Custom"][type][x][y], type, position));
+
+									--Give Orders
+									if(PlatoonList ~= nil and table.getn(PlatoonList) ~= 0) then
+
+										--AIR or Ranged
+										if(type == "AIR") then
+											order = 2;	--Attack Move
+										else
+											order = 1;	--Move
 										end
 
-										table.insert(PlatoonList, SpawnUnit(s_WavesTable[s_Wave]["Custom"][type][x][y], type, position));
-
-										--Give Orders
-										if(PlatoonList ~= nil and table.getn(PlatoonList) ~= 0) then
-
-											--AIR or Ranged
-											if(type == "AIR") then
-												order = 2;	--Attack Move
-											else
-												order = 1;	--Move
-											end
-
-											PlatoonOrder("ARMY_SURVIVAL_ENEMY", PlatoonList, order, type, MarkerData[2]);
-											PlatoonList = {};
-										end
+										PlatoonOrder("ARMY_SURVIVAL_ENEMY", PlatoonList, order, type, MarkerData[2]);
+										PlatoonList = {};
 									end
 								end
 							end
@@ -911,37 +911,33 @@ SpawnCategory = function(prefix, type)
 								--Make sure this is a player
 								if (ArmyToInt.GetInt(Army) > 0) then
 
-									--Spawn Several Times for Multiplier
-									for u = 1, ScenarioInfo.Options.opt_Survival_WaveMultiplier do
+									MarkerData = GetSpawnMarker(type, ArmyToInt.GetInt(Army) , false);
+									position[1] = MarkerData[1].position[1];
+									position[2] = MarkerData[1].position[2];
+									position[3] = MarkerData[1].position[3];
 
-										MarkerData = GetSpawnMarker(type, ArmyToInt.GetInt(Army) , false);
-										position[1] = MarkerData[1].position[1];
-										position[2] = MarkerData[1].position[2];
-										position[3] = MarkerData[1].position[3];
+									--If random range is not zero
+									if(s_SpawnRadius ~= 0) then
+										position[1] = MarkerData[1].position[1] + math.random(-s_SpawnRadius, s_SpawnRadius);
+										position[3] = MarkerData[1].position[3] + math.random(-s_SpawnRadius, s_SpawnRadius);
+									end
 
-										--If random range is not zero
-										if(s_SpawnRadius ~= 0) then
-											position[1] = MarkerData[1].position[1] + math.random(-s_SpawnRadius, s_SpawnRadius);
-											position[3] = MarkerData[1].position[3] + math.random(-s_SpawnRadius, s_SpawnRadius);
+									table.insert(PlatoonList, SpawnUnit(bp, type, position));
+
+									--Give Orders
+									if(PlatoonList ~= nil and table.getn(PlatoonList) ~= 0) then
+
+										--AIR or Ranged
+										if(type == "AIR" or x == 4 or type == "AIRBOSS") then
+											order = 2;	--Attack Move
+										elseif(bp == 'UAL0303') then --Hack fix for Reclaim unit
+											order = 1;
+										else
+											order = 1;	--Move
 										end
 
-										table.insert(PlatoonList, SpawnUnit(bp, type, position));
-
-										--Give Orders
-										if(PlatoonList ~= nil and table.getn(PlatoonList) ~= 0) then
-
-											--AIR or Ranged
-											if(type == "AIR" or x == 4 or type == "AIRBOSS") then
-												order = 2;	--Attack Move
-											elseif(bp == 'UAL0303') then --Hack fix for Reclaim unit
-												order = 1;
-											else
-												order = 1;	--Move
-											end
-
-											PlatoonOrder("ARMY_SURVIVAL_ENEMY", PlatoonList, order, type, MarkerData[2]);
-											PlatoonList = {};
-										end
+										PlatoonOrder("ARMY_SURVIVAL_ENEMY", PlatoonList, order, type, MarkerData[2]);
+										PlatoonList = {};
 									end
 								end
 							end
@@ -1349,9 +1345,7 @@ SetupSettings = function()
 	end
 
 	--Nerf wave depending how many are spawning
-	if(s_WaveBalance == true and TypeCount > 1) then
-		WaveBalance(TypeCount);
-	end
+	WaveBalance(TypeCount);
 	   
 	--Calculate Waves and Time
 	s_TotalWaves = table.getn(s_WavesTable);
@@ -1382,15 +1376,17 @@ WaveBalance = function(count)
 
 	--Only spawn half the units per category
 	local ratio = 0.5;
-	if(count == 3) then
-		ratio = 0.33334;
+	if(count == 1) then
+		ratio = 1 * ScenarioInfo.Options.opt_Survival_WaveMultiplier;
+	elseif(count == 3) then
+		ratio = 0.33334 * ScenarioInfo.Options.opt_Survival_WaveMultiplier;
 	end
 
 	--Loop thorugh each (w)ave
 	for w = 1, table.getn(s_WavesTable) do
 		for i = 1, 4 do
 			if(s_WavesTable[w]["Land T" .. i] ~= nil) then
-				for x = 1, table.getn(s_WavesTable[w]["Land T" .. i]) do			--Type
+				for x = 1, table.getn(s_WavesTable[w]["Land T" .. i]) do		--Type
 					s_WavesTable[w]["Land T" .. i][x] 
 						= math.ceil(s_WavesTable[w]["Land T" .. i][x] * ratio);
 				end
@@ -1402,7 +1398,7 @@ WaveBalance = function(count)
 				end
 			end
 			if(s_WavesTable[w]["Navy T" .. i] ~= nil) then
-				for x = 1, table.getn(s_WavesTable[w]["Navy T" .. i]) do			--Type
+				for x = 1, table.getn(s_WavesTable[w]["Navy T" .. i]) do		--Type
 					s_WavesTable[w]["Navy T" .. i][x] 
 						= math.ceil(s_WavesTable[w]["Navy T" .. i][x] * ratio);
 				end
@@ -1478,11 +1474,7 @@ SpawnDefenseObjective = function()
 	end
 
 	--Create Defense Objective
-	if(not s_DebugMode) then
-		s_DefenseObjectiveUnit = CreateUnitHPR(DefenseObjBP, "ARMY_SURVIVAL_ALLY", POS[1], POS[2], POS[3], 0,0,0);
-	else
-		s_DefenseObjectiveUnit = CreateUnitHPR(DefenseObjBP, "ARMY_SURVIVAL_ENEMY", POS[1], POS[2], POS[3], 0,0,0);
-	end
+	s_DefenseObjectiveUnit = CreateUnitHPR(DefenseObjBP, "ARMY_SURVIVAL_ALLY", POS[1], POS[2], POS[3], 0,0,0);
 
 	--Stats
 	s_DefenseObjectiveUnit:SetReclaimable(false);
@@ -1570,7 +1562,7 @@ CreateResources = function()
 			ArmyPos[1] = MarkerData.position[1];
 			ArmyPos[2] = MarkerData.position[2];
 			ArmyPos[3] = MarkerData.position[3];
-			POS[1] = ArmyPos[2];
+			POS[1] = ArmyPos[1];
 			POS[2] = ArmyPos[2];
 			POS[3] = ArmyPos[3];
 			

@@ -10,7 +10,6 @@ SpawnACUs = function(Mods)
 
 	--Setup Armies
 	InitializeArmies();
-    --ScenarioUtils.InitializeArmies();
 
 	local spawnID = ScenarioInfo.Options.opt_Survival_AllFactions;
 	local count = 0;
